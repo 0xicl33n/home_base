@@ -56,9 +56,6 @@ class HomeBase(plugins.Plugin):
             ui.set('face', '(◕‿‿◕)')
             ui.set('face', '(ᵔ◡◡ᵔ)')
             ui.set('status', 'We\'re home! Pausing monitor mode ...')
-        while self.status == 'scrambling_mac':
-            ui.set('face', '(⌐■_■)')
-            ui.set('status', 'Scrambling MAC address before connecting to %s ...' % self.network)
         while self.status == 'associating':
             ui.set('status', 'Greeting the AP and asking for an IP via DHCP ...')
             ui.set('face', '(◕‿◕ )')
@@ -89,11 +86,6 @@ def _connect_to_target_network(self, agent, network_name, channel):
     # Runs this driver reload command again because sometimes it gets stuck the first time:
     subprocess.run('modprobe --remove brcmfmac; modprobe brcmfmac', shell=True, stdin=None, stdout=open("/dev/null", "w"), stderr=None, executable="/bin/bash")
     time.sleep(5)
-    _log('randomizing wlan0 MAC address prior to connecting...')
-    self.status = 'scrambling_mac'
-    subprocess.run('macchanger -A wlan0', shell=True, stdin=None, stdout=open("/dev/null", "w"), stderr=None, executable="/bin/bash")
-    time.sleep(5)
-    _log('starting up wlan0 again...')
     subprocess.run('ifconfig wlan0 up', shell=True, stdin=None, stdout=open("/dev/null", "w"), stderr=None, executable="/bin/bash")
     time.sleep(3)
     # This command runs multiple times because it sometimes doesn't work the first time:
